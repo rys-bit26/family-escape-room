@@ -1,12 +1,13 @@
-import { useCallback } from 'react';
 import { useGameStore } from '../../store/gameStore.ts';
 import { useInventoryStore } from '../../store/inventoryStore.ts';
 import { useJournalStore } from '../../store/journalStore.ts';
 import { useUiStore } from '../../store/uiStore.ts';
 import { getRoomById } from '../../data/rooms/index.ts';
+import { getItemById } from '../../data/items.ts';
 import { getVisibleHotSpots } from '../../engine/roomEngine.ts';
 import { HotSpot } from './HotSpot.tsx';
 import { ObjectExamine } from './ObjectExamine.tsx';
+import { KeyRound, CheckCircle, Search } from 'lucide-react';
 import type { HotSpotAction, HotSpot as HotSpotDef } from '../../types/room.ts';
 
 export function RoomView() {
@@ -15,9 +16,8 @@ export function RoomView() {
   const discoveredObjectIds = useGameStore((s) => s.discoveredObjectIds);
   const discoverObject = useGameStore((s) => s.discoverObject);
   const collectedItemIds = useInventoryStore((s) => s.collectedItemIds);
-  const hasItem = useInventoryStore((s) => s.hasItem);
+  const usedItemIds = useInventoryStore((s) => s.usedItemIds);
   const pickupItem = useInventoryStore((s) => s.pickupItem);
-  const useItem = useInventoryStore((s) => s.useItem);
   const addJournalEntry = useJournalStore((s) => s.addEntry);
   const openExamine = useUiStore((s) => s.openExamine);
   const openPuzzle = useUiStore((s) => s.openPuzzle);
@@ -25,37 +25,64 @@ export function RoomView() {
 
   const room = getRoomById(currentRoomId);
 
-  const handleAction = useCallback((action: HotSpotAction, hotSpot: HotSpotDef) => {
+  // Handle hotspot actions — reads inventory state directly from the store
+  // to avoid stale closure issues with useCallback
+  function handleAction(action: HotSpotAction, hotSpot: HotSpotDef) {
     discoverObject(hotSpot.id);
 
     switch (action.kind) {
       case 'examine':
         openExamine(hotSpot.id, action.description);
         break;
-      case 'pickup':
-        pickupItem(action.itemId);
-        showMessage(`Found: ${hotSpot.label}!`);
+      case 'pickup': {
+        const currentCollected = useInventoryStore.getState().collectedItemIds;
+        if (currentCollected.includes(action.itemId)) {
+          const item = getItemById(action.itemId);
+          showMessage(`You already have the ${item?.name ?? 'item'}.`);
+        } else {
+          pickupItem(action.itemId);
+          const item = getItemById(action.itemId);
+          showMessage(`Found: ${item?.name ?? hotSpot.label}!`);
+        }
         break;
+      }
       case 'open_puzzle':
         openPuzzle(action.puzzleId);
         break;
-      case 'use_item':
-        if (hasItem(action.requiredItemId)) {
-          useItem(action.requiredItemId);
+      case 'use_item': {
+        // Read current inventory directly from store — avoids stale closure bug
+        const invState = useInventoryStore.getState();
+        const hasKey = invState.collectedItemIds.includes(action.requiredItemId)
+          && !invState.usedItemIds.includes(action.requiredItemId);
+        if (hasKey) {
+          useInventoryStore.getState().useItem(action.requiredItemId);
+          const item = getItemById(action.requiredItemId);
+          showMessage(`Used: ${item?.name ?? 'item'}!`);
+          // Small delay so the "Used" message shows before the next action
+          setTimeout(() => handleAction(action.resultAction, hotSpot), 600);
+        } else if (invState.usedItemIds.includes(action.requiredItemId)) {
+          // Item was already used — cabinet is already unlocked, open the puzzle directly
           handleAction(action.resultAction, hotSpot);
         } else {
-          showMessage('You need something to use here...');
+          showMessage('You need to find something to use here...');
         }
         break;
+      }
       case 'show_message':
         showMessage(action.message);
         break;
-      case 'add_journal_entry':
-        addJournalEntry({ text: action.entryText, roomId: currentRoomId });
-        showMessage('Added a clue to your journal!');
+      case 'add_journal_entry': {
+        const journalState = useJournalStore.getState();
+        if (journalState.hasEntry(action.entryText)) {
+          showMessage('You already noted this clue in your journal.');
+        } else {
+          addJournalEntry({ text: action.entryText, roomId: currentRoomId });
+          showMessage('Added a clue to your journal!');
+        }
         break;
+      }
     }
-  }, [currentRoomId, discoverObject, openExamine, openPuzzle, showMessage, pickupItem, hasItem, useItem, addJournalEntry]);
+  }
 
   if (!room) return <div className="flex-1 flex items-center justify-center text-gray-400">Room not found</div>;
 
@@ -77,6 +104,51 @@ export function RoomView() {
           isInteracted={discoveredObjectIds.includes(hs.id)}
         />
       ))}
+
+      {/* Floating indicators for found items / solved puzzles / examined objects */}
+      {visibleHotSpots.map((hs) => {
+        let indicator: 'key' | 'solved' | 'examined' | null = null;
+
+        if (hs.type === 'pickup' && hs.action.kind === 'pickup' && collectedItemIds.includes(hs.action.itemId)) {
+          indicator = 'key';
+        } else if (hs.type === 'puzzle' && hs.action.kind === 'open_puzzle' && solvedPuzzleIds.includes(hs.action.puzzleId)) {
+          indicator = 'solved';
+        } else if (hs.type === 'use_item' && hs.action.kind === 'use_item' && usedItemIds.includes(hs.action.requiredItemId)) {
+          indicator = 'solved';
+        } else if ((hs.type === 'examine' || hs.action.kind === 'add_journal_entry') && discoveredObjectIds.includes(hs.id)) {
+          indicator = 'examined';
+        }
+
+        if (!indicator) return null;
+
+        return (
+          <div
+            key={`indicator-${hs.id}`}
+            className="absolute pointer-events-none z-20"
+            style={{
+              left: `${hs.x + hs.width / 2}%`,
+              top: `${hs.y}%`,
+              transform: 'translate(-50%, -120%)',
+            }}
+          >
+            {indicator === 'key' && (
+              <div className="bg-amber-500 text-gray-900 rounded-full p-1.5 shadow-lg shadow-amber-500/40 animate-bounce">
+                <KeyRound size={16} />
+              </div>
+            )}
+            {indicator === 'solved' && (
+              <div className="bg-green-500 text-white rounded-full p-1.5 shadow-lg shadow-green-500/40">
+                <CheckCircle size={16} />
+              </div>
+            )}
+            {indicator === 'examined' && (
+              <div className="bg-blue-500/80 text-white rounded-full p-1 shadow-lg shadow-blue-500/30">
+                <Search size={14} />
+              </div>
+            )}
+          </div>
+        );
+      })}
 
       {/* Examine Modal */}
       <ObjectExamine />
