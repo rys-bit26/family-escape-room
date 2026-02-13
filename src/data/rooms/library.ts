@@ -1,0 +1,100 @@
+import type { RoomDefinition } from '../../types/room.ts';
+
+export const libraryRoom: RoomDefinition = {
+  id: 'library',
+  name: 'The Library',
+  theme: 'library',
+  description: 'A dusty library filled with ancient books. Somewhere in here lies the key to the next room.',
+  backgroundImage: '/assets/rooms/library/background.svg',
+  nextRoomId: null, // MVP: single room
+
+  hotSpots: [
+    {
+      id: 'library-bookshelf',
+      roomId: 'library',
+      x: 8, y: 15, width: 22, height: 65,
+      label: 'Bookshelf',
+      type: 'examine',
+      action: {
+        kind: 'add_journal_entry',
+        entryText: 'The bookshelf has colored spines: Red, Blue, Green, Yellow. The order seems important.',
+      },
+      glowOnEasy: true,
+    },
+    {
+      id: 'library-globe',
+      roomId: 'library',
+      x: 72, y: 25, width: 12, height: 18,
+      label: 'Old Globe',
+      type: 'examine',
+      action: {
+        kind: 'examine',
+        description: 'An old globe sits on a pedestal. Someone scratched "3-1-4-1" on the base.',
+      },
+      glowOnEasy: true,
+    },
+    {
+      id: 'library-desk',
+      roomId: 'library',
+      x: 35, y: 50, width: 24, height: 28,
+      label: 'Writing Desk',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'library-code-lock' },
+      glowOnEasy: true,
+    },
+    {
+      id: 'library-painting',
+      roomId: 'library',
+      x: 33, y: 5, width: 28, height: 22,
+      label: 'Painting on the Wall',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'library-pattern-match' },
+    },
+    {
+      id: 'library-drawer-key',
+      roomId: 'library',
+      x: 42, y: 73, width: 10, height: 7,
+      label: 'Hidden Drawer',
+      type: 'pickup',
+      action: { kind: 'pickup', itemId: 'brass-key' },
+      visibleWhen: { type: 'puzzle_solved', targetId: 'library-code-lock' },
+    },
+    {
+      id: 'library-locked-cabinet',
+      roomId: 'library',
+      x: 78, y: 50, width: 16, height: 35,
+      label: 'Locked Cabinet',
+      type: 'use_item',
+      action: {
+        kind: 'use_item',
+        requiredItemId: 'brass-key',
+        resultAction: { kind: 'open_puzzle', puzzleId: 'library-riddle' },
+      },
+      glowOnEasy: true,
+    },
+    {
+      id: 'library-exit-door',
+      roomId: 'library',
+      x: 0, y: 10, width: 8, height: 75,
+      label: 'Exit Door',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'library-exit-code' },
+      visibleWhen: { type: 'puzzle_solved', targetId: 'library-riddle' },
+    },
+    {
+      id: 'library-cat-statue',
+      roomId: 'library',
+      x: 62, y: 68, width: 8, height: 14,
+      label: 'Cat Statue',
+      type: 'decoration',
+      action: { kind: 'show_message', message: 'A stone cat stares at you judgmentally. It does not seem helpful.' },
+    },
+  ],
+
+  puzzleIds: ['library-code-lock', 'library-pattern-match', 'library-riddle', 'library-exit-code'],
+  requiredPuzzleIds: ['library-code-lock', 'library-pattern-match', 'library-riddle', 'library-exit-code'],
+
+  exitCondition: {
+    type: 'all_required_puzzles',
+  },
+};
