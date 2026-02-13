@@ -1,0 +1,108 @@
+import type { RoomDefinition } from '../../types/room.ts';
+
+export const arcadeRoom: RoomDefinition = {
+  id: 'arcade',
+  name: 'The Arcade',
+  theme: 'arcade',
+  description: 'A neon-lit retro arcade. Machines hum and blink. Find the way out before your credits run out!',
+  backgroundImage: '/assets/rooms/arcade/background.svg',
+  nextRoomId: null,
+
+  hotSpots: [
+    {
+      id: 'arcade-machine',
+      roomId: 'arcade',
+      x: 10, y: 20, width: 20, height: 55,
+      label: 'Arcade Machine',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'arcade-high-score' },
+      glowOnEasy: true,
+    },
+    {
+      id: 'arcade-poster',
+      roomId: 'arcade',
+      x: 32, y: 5, width: 16, height: 25,
+      label: 'Dance Moves Poster',
+      type: 'examine',
+      action: {
+        kind: 'add_journal_entry',
+        entryText: 'The poster shows dance arrows: Up=Green, Left=Red, Right=Blue, Down=Yellow.',
+      },
+      glowOnEasy: true,
+    },
+    {
+      id: 'arcade-dance-pad',
+      roomId: 'arcade',
+      x: 35, y: 55, width: 22, height: 30,
+      label: 'Dance Pad',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'arcade-light-pattern' },
+    },
+    {
+      id: 'arcade-sticky-note',
+      roomId: 'arcade',
+      x: 12, y: 15, width: 8, height: 6,
+      label: 'Sticky Note',
+      type: 'examine',
+      action: {
+        kind: 'examine',
+        description: 'A faded sticky note on the machine reads: "LEET = 1337"',
+      },
+      glowOnEasy: true,
+    },
+    {
+      id: 'arcade-token-slot',
+      roomId: 'arcade',
+      x: 62, y: 35, width: 15, height: 40,
+      label: 'Jukebox',
+      type: 'use_item',
+      action: {
+        kind: 'use_item',
+        requiredItemId: 'arcade-token',
+        resultAction: { kind: 'open_puzzle', puzzleId: 'arcade-riddle' },
+      },
+      glowOnEasy: true,
+    },
+    {
+      id: 'arcade-exit-gate',
+      roomId: 'arcade',
+      x: 85, y: 10, width: 12, height: 75,
+      label: 'Exit Gate',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'arcade-exit' },
+      visibleWhen: { type: 'puzzle_solved', targetId: 'arcade-riddle' },
+    },
+    // Red herrings
+    {
+      id: 'arcade-broken-machine',
+      roomId: 'arcade',
+      x: 80, y: 50, width: 10, height: 30,
+      label: 'Broken Machine',
+      type: 'decoration',
+      action: { kind: 'show_message', message: 'This machine is out of order. A sign says "Insert 25 cents" but the coin slot is jammed.' },
+    },
+    {
+      id: 'arcade-gumball',
+      roomId: 'arcade',
+      x: 58, y: 75, width: 8, height: 15,
+      label: 'Gumball Machine',
+      type: 'decoration',
+      action: { kind: 'show_message', message: 'A gumball machine full of colorful gumballs. Tempting, but not helpful.' },
+    },
+    {
+      id: 'arcade-neon-sign',
+      roomId: 'arcade',
+      x: 50, y: 2, width: 20, height: 10,
+      label: 'Neon Sign',
+      type: 'decoration',
+      action: { kind: 'show_message', message: 'The neon sign flickers: "GAME ZONE" in bright pink letters. Very retro.' },
+    },
+  ],
+
+  puzzleIds: ['arcade-high-score', 'arcade-light-pattern', 'arcade-riddle', 'arcade-exit'],
+  requiredPuzzleIds: ['arcade-high-score', 'arcade-light-pattern', 'arcade-riddle', 'arcade-exit'],
+
+  exitCondition: {
+    type: 'all_required_puzzles',
+  },
+};

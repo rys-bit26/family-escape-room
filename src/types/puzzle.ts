@@ -18,6 +18,8 @@ export interface PuzzleDefinition {
   data: PuzzleData;
   solution: PuzzleSolution;
   hints: HintDefinition[];
+  /** Max wrong attempts per difficulty (0 = unlimited). */
+  maxAttempts?: Partial<Record<DifficultyLevel, number>>;
   rewardClue?: string;
   rewardItemId?: string;
 }

@@ -6,7 +6,7 @@ export const libraryRoom: RoomDefinition = {
   theme: 'library',
   description: 'A dusty library filled with ancient books. Somewhere in here lies the key to the next room.',
   backgroundImage: '/assets/rooms/library/background.svg',
-  nextRoomId: null, // MVP: single room
+  nextRoomId: null,
 
   hotSpots: [
     {
@@ -81,6 +81,7 @@ export const libraryRoom: RoomDefinition = {
       action: { kind: 'open_puzzle', puzzleId: 'library-exit-code' },
       visibleWhen: { type: 'puzzle_solved', targetId: 'library-riddle' },
     },
+    // --- Red herrings / decorations ---
     {
       id: 'library-cat-statue',
       roomId: 'library',
@@ -88,6 +89,30 @@ export const libraryRoom: RoomDefinition = {
       label: 'Cat Statue',
       type: 'decoration',
       action: { kind: 'show_message', message: 'A stone cat stares at you judgmentally. It does not seem helpful.' },
+    },
+    {
+      id: 'library-candle-left',
+      roomId: 'library',
+      x: 13, y: 2, width: 5, height: 10,
+      label: 'Candle Sconce',
+      type: 'decoration',
+      action: { kind: 'show_message', message: 'The candle flickers faintly. Is that wax or a number? ...No, it is just wax.' },
+    },
+    {
+      id: 'library-rug',
+      roomId: 'library',
+      x: 30, y: 82, width: 35, height: 14,
+      label: 'Old Rug',
+      type: 'decoration',
+      action: { kind: 'show_message', message: 'You lift the rug. Nothing but dust bunnies and disappointment.' },
+    },
+    {
+      id: 'library-candle-right',
+      roomId: 'library',
+      x: 78, y: 2, width: 5, height: 10,
+      label: 'Candle Sconce',
+      type: 'decoration',
+      action: { kind: 'show_message', message: 'The right candle is burned down further than the left one. Curious, but probably meaningless.' },
     },
   ],
 

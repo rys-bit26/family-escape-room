@@ -9,6 +9,7 @@ interface HotSpotProps {
 
 export function HotSpot({ hotSpot, onClick, isInteracted }: HotSpotProps) {
   const difficulty = useGameStore((s) => s.difficulty);
+  const isHard = difficulty === 'hard';
   const showGlow = hotSpot.glowOnEasy && difficulty === 'easy' && !isInteracted;
 
   return (
@@ -27,11 +28,14 @@ export function HotSpot({ hotSpot, onClick, isInteracted }: HotSpotProps) {
         width: `${hotSpot.width}%`,
         height: `${hotSpot.height}%`,
       }}
-      title={hotSpot.label}
+      title={isHard ? undefined : hotSpot.label}
     >
-      <span className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs bg-gray-900/90 text-amber-400 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        {hotSpot.label}
-      </span>
+      {/* Hide hover labels on hard mode — players must explore blindly */}
+      {!isHard && (
+        <span className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs bg-gray-900/90 text-amber-400 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          {hotSpot.label}
+        </span>
+      )}
     </button>
   );
 }
