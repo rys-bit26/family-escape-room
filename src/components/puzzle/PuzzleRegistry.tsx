@@ -3,6 +3,8 @@ import { CodePuzzle } from './CodePuzzle.tsx';
 import { PatternPuzzle } from './PatternPuzzle.tsx';
 import { RiddlePuzzle } from './RiddlePuzzle.tsx';
 import { LogicPuzzle } from './LogicPuzzle.tsx';
+import { SequencePuzzle } from './SequencePuzzle.tsx';
+import { ItemCombinationPuzzle } from './ItemCombinationPuzzle.tsx';
 import type { ComponentType } from 'react';
 
 export interface PuzzleComponentProps {
@@ -15,8 +17,8 @@ const PUZZLE_COMPONENTS: Record<PuzzleType, ComponentType<PuzzleComponentProps>>
   pattern_match: PatternPuzzle,
   riddle: RiddlePuzzle,
   logic_deduction: LogicPuzzle,
-  hidden_sequence: PatternPuzzle,    // reuse pattern UI
-  item_combination: CodePuzzle,      // placeholder
+  hidden_sequence: SequencePuzzle,
+  item_combination: ItemCombinationPuzzle,
 };
 
 export function getPuzzleComponent(type: PuzzleType): ComponentType<PuzzleComponentProps> {

@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { DifficultyLevel, GameStatus } from '../types/game.ts';
+import type { DifficultyLevel, GameStatus, GameMode } from '../types/game.ts';
 
 interface GameStore {
   id: string;
   status: GameStatus;
   difficulty: DifficultyLevel;
+  mode: GameMode;
   currentRoomId: string;
   unlockedRoomIds: string[];
   solvedPuzzleIds: string[];
@@ -15,8 +16,11 @@ interface GameStore {
   elapsedSeconds: number;
   hintsUsed: number;
   totalHintsAvailable: number;
+  showRoomComplete: boolean;
+  completedRoomId: string | null;
+  storyIntroSeen: boolean;
 
-  startNewGame: (difficulty: DifficultyLevel, firstRoomId: string) => void;
+  startNewGame: (difficulty: DifficultyLevel, firstRoomId: string, mode: GameMode) => void;
   solvePuzzle: (puzzleId: string) => void;
   discoverObject: (objectId: string) => void;
   unlockRoom: (roomId: string) => void;
@@ -25,6 +29,8 @@ interface GameStore {
   updateElapsedTime: (seconds: number) => void;
   completeGame: () => void;
   resetGame: () => void;
+  setRoomCompleteVisible: (roomId: string | null) => void;
+  setStoryIntroSeen: () => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -33,6 +39,7 @@ export const useGameStore = create<GameStore>()(
       id: '',
       status: 'not_started',
       difficulty: 'medium',
+      mode: 'freeplay',
       currentRoomId: '',
       unlockedRoomIds: [],
       solvedPuzzleIds: [],
@@ -42,11 +49,15 @@ export const useGameStore = create<GameStore>()(
       elapsedSeconds: 0,
       hintsUsed: 0,
       totalHintsAvailable: 10,
+      showRoomComplete: false,
+      completedRoomId: null,
+      storyIntroSeen: false,
 
-      startNewGame: (difficulty, firstRoomId) => set({
+      startNewGame: (difficulty, firstRoomId, mode) => set({
         id: crypto.randomUUID(),
         status: 'in_progress',
         difficulty,
+        mode,
         currentRoomId: firstRoomId,
         unlockedRoomIds: [firstRoomId],
         solvedPuzzleIds: [],
@@ -56,6 +67,9 @@ export const useGameStore = create<GameStore>()(
         elapsedSeconds: 0,
         hintsUsed: 0,
         totalHintsAvailable: difficulty === 'easy' ? 15 : difficulty === 'medium' ? 10 : 5,
+        showRoomComplete: false,
+        completedRoomId: null,
+        storyIntroSeen: false,
       }),
 
       solvePuzzle: (puzzleId) => set((state) => ({
@@ -87,6 +101,7 @@ export const useGameStore = create<GameStore>()(
         id: '',
         status: 'not_started',
         difficulty: 'medium',
+        mode: 'freeplay',
         currentRoomId: '',
         unlockedRoomIds: [],
         solvedPuzzleIds: [],
@@ -96,11 +111,28 @@ export const useGameStore = create<GameStore>()(
         elapsedSeconds: 0,
         hintsUsed: 0,
         totalHintsAvailable: 10,
+        showRoomComplete: false,
+        completedRoomId: null,
+        storyIntroSeen: false,
       }),
+
+      setRoomCompleteVisible: (roomId) => set({
+        showRoomComplete: roomId !== null,
+        completedRoomId: roomId,
+      }),
+
+      setStoryIntroSeen: () => set({ storyIntroSeen: true }),
     }),
     {
       name: 'family-escape-room-game',
-      version: 1,
+      version: 2,
+      migrate: (persisted: unknown, version: number) => {
+        if (version < 2) {
+          const state = persisted as Record<string, unknown>;
+          return { ...state, mode: 'freeplay', showRoomComplete: false, completedRoomId: null, storyIntroSeen: false };
+        }
+        return persisted;
+      },
     }
   )
 );

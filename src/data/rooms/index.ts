@@ -22,3 +22,5 @@ export function getFirstRoomId(): string {
 export function getAllRooms(): RoomDefinition[] {
   return ALL_ROOMS;
 }
+
+export const CAMPAIGN_ROOM_ORDER = ['library', 'arcade', 'concert-hall', 'space-station'];

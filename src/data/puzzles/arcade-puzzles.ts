@@ -139,4 +139,24 @@ export const arcadePuzzles: PuzzleDefinition[] = [
     maxAttempts: { easy: 0, medium: 6, hard: 4 },
     rewardClue: 'The gate swings open! You escaped the arcade!',
   },
+  {
+    id: 'arcade-joystick-repair',
+    roomId: 'arcade',
+    type: 'item_combination',
+    name: 'Fix the Joystick',
+    description: 'The main arcade machine has a broken joystick. If you can find the right parts, maybe you can fix it.',
+    data: {
+      type: 'item_combination',
+      requiredItems: ['broken-joystick', 'circuit-board'],
+      resultItemId: 'repaired-joystick',
+    },
+    solution: { type: 'items', itemIds: ['broken-joystick', 'circuit-board'] },
+    hints: [
+      { tier: 1, text: 'You need two parts to repair the joystick.', autoShowOnEasy: true },
+      { tier: 2, text: 'Look for a handle and an electronic component.' },
+      { tier: 3, text: 'Combine the broken joystick with the circuit board.' },
+    ],
+    maxAttempts: { easy: 0, medium: 0, hard: 0 },
+    rewardClue: 'The joystick clicks into place! The arcade machine whirs to life with a bonus message.',
+  },
 ];

@@ -2,6 +2,8 @@ export type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
 export type GameStatus = 'not_started' | 'in_progress' | 'completed';
 
+export type GameMode = 'campaign' | 'freeplay';
+
 export interface GameState {
   id: string;
   status: GameStatus;

@@ -6,7 +6,7 @@ export const libraryRoom: RoomDefinition = {
   theme: 'library',
   description: 'A dusty library filled with ancient books. Somewhere in here lies the key to the next room.',
   backgroundImage: '/assets/rooms/library/background.svg',
-  nextRoomId: null,
+  nextRoomId: 'arcade',
 
   hotSpots: [
     {

@@ -6,7 +6,7 @@ export const arcadeRoom: RoomDefinition = {
   theme: 'arcade',
   description: 'A neon-lit retro arcade. Machines hum and blink. Find the way out before your credits run out!',
   backgroundImage: '/assets/rooms/arcade/background.svg',
-  nextRoomId: null,
+  nextRoomId: 'concert-hall',
 
   hotSpots: [
     {
@@ -72,6 +72,33 @@ export const arcadeRoom: RoomDefinition = {
       action: { kind: 'open_puzzle', puzzleId: 'arcade-exit' },
       visibleWhen: { type: 'puzzle_solved', targetId: 'arcade-riddle' },
     },
+    // Bonus puzzle - item combination
+    {
+      id: 'arcade-broken-joystick-pickup',
+      roomId: 'arcade',
+      x: 80, y: 85, width: 8, height: 10,
+      label: 'Broken Joystick Handle',
+      type: 'pickup',
+      action: { kind: 'pickup', itemId: 'broken-joystick' },
+    },
+    {
+      id: 'arcade-circuit-board-pickup',
+      roomId: 'arcade',
+      x: 58, y: 55, width: 8, height: 10,
+      label: 'Circuit Board',
+      type: 'pickup',
+      action: { kind: 'pickup', itemId: 'circuit-board' },
+      visibleWhen: { type: 'puzzle_solved', targetId: 'arcade-high-score' },
+    },
+    {
+      id: 'arcade-repair-station',
+      roomId: 'arcade',
+      x: 15, y: 78, width: 12, height: 15,
+      label: 'Repair Station',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'arcade-joystick-repair' },
+      visibleWhen: { type: 'item_collected', targetId: 'broken-joystick' },
+    },
     // Red herrings
     {
       id: 'arcade-broken-machine',
@@ -99,7 +126,7 @@ export const arcadeRoom: RoomDefinition = {
     },
   ],
 
-  puzzleIds: ['arcade-high-score', 'arcade-light-pattern', 'arcade-riddle', 'arcade-exit'],
+  puzzleIds: ['arcade-high-score', 'arcade-light-pattern', 'arcade-riddle', 'arcade-exit', 'arcade-joystick-repair'],
   requiredPuzzleIds: ['arcade-high-score', 'arcade-light-pattern', 'arcade-riddle', 'arcade-exit'],
 
   exitCondition: {

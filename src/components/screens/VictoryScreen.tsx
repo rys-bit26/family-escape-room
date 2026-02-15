@@ -1,9 +1,11 @@
 import { useGameStore } from '../../store/gameStore.ts';
 import { useNavigate } from 'react-router';
+import { CAMPAIGN_VICTORY } from '../../data/narrative.ts';
 
 export function VictoryScreen() {
   const elapsedSeconds = useGameStore((s) => s.elapsedSeconds);
   const hintsUsed = useGameStore((s) => s.hintsUsed);
+  const mode = useGameStore((s) => s.mode);
   const resetGame = useGameStore((s) => s.resetGame);
   const navigate = useNavigate();
 
@@ -22,10 +24,18 @@ export function VictoryScreen() {
         <div className="text-7xl">🎉</div>
         <h1 className="text-4xl font-bold text-amber-400">You Escaped!</h1>
         <p className="text-gray-300 text-lg">
-          Congratulations! Your family solved all the puzzles and made it out!
+          {mode === 'campaign'
+            ? CAMPAIGN_VICTORY
+            : 'Congratulations! Your family solved all the puzzles and made it out!'}
         </p>
 
         <div className="bg-gray-800 rounded-xl p-6 w-full border border-gray-700">
+          {mode === 'campaign' && (
+            <div className="flex justify-between text-gray-300 mb-3">
+              <span>Rooms Completed</span>
+              <span className="font-mono font-bold text-amber-400">4</span>
+            </div>
+          )}
           <div className="flex justify-between text-gray-300 mb-3">
             <span>Time</span>
             <span className="font-mono font-bold text-amber-400">{timeStr}</span>

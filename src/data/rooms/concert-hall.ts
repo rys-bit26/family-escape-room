@@ -6,7 +6,7 @@ export const concertHallRoom: RoomDefinition = {
   theme: 'concert-hall',
   description: 'A grand but abandoned concert hall. The curtains sway. Can you decipher the musical mysteries and take your final bow?',
   backgroundImage: '/assets/rooms/concert-hall/background.svg',
-  nextRoomId: null,
+  nextRoomId: 'space-station',
 
   hotSpots: [
     {
@@ -72,6 +72,15 @@ export const concertHallRoom: RoomDefinition = {
       action: { kind: 'open_puzzle', puzzleId: 'concert-exit' },
       visibleWhen: { type: 'puzzle_solved', targetId: 'concert-riddle' },
     },
+    // Bonus puzzle
+    {
+      id: 'concert-scattered-music',
+      roomId: 'concert-hall',
+      x: 50, y: 40, width: 15, height: 15,
+      label: 'Scattered Sheet Music',
+      type: 'puzzle',
+      action: { kind: 'open_puzzle', puzzleId: 'concert-note-sequence' },
+    },
     // Red herrings
     {
       id: 'concert-chandelier',
@@ -107,7 +116,7 @@ export const concertHallRoom: RoomDefinition = {
     },
   ],
 
-  puzzleIds: ['concert-piano-code', 'concert-spotlight-pattern', 'concert-riddle', 'concert-exit'],
+  puzzleIds: ['concert-piano-code', 'concert-spotlight-pattern', 'concert-riddle', 'concert-exit', 'concert-note-sequence'],
   requiredPuzzleIds: ['concert-piano-code', 'concert-spotlight-pattern', 'concert-riddle', 'concert-exit'],
 
   exitCondition: {

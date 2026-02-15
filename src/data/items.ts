@@ -33,6 +33,30 @@ export const allItems: InventoryItemDefinition[] = [
     icon: 'wand-2',
     isKey: true,
   },
+  // Arcade - item_combination puzzle
+  {
+    id: 'broken-joystick',
+    name: 'Broken Joystick',
+    description: 'A joystick handle snapped off an old arcade machine.',
+    icon: 'joystick',
+    canCombineWith: ['circuit-board'],
+    combinationResult: 'repaired-joystick',
+  },
+  {
+    id: 'circuit-board',
+    name: 'Circuit Board',
+    description: 'A small green circuit board with blinking LEDs.',
+    icon: 'cpu',
+    canCombineWith: ['broken-joystick'],
+    combinationResult: 'repaired-joystick',
+  },
+  {
+    id: 'repaired-joystick',
+    name: 'Repaired Joystick',
+    description: 'A fully working joystick, ready to be plugged back in.',
+    icon: 'gamepad-2',
+    isKey: true,
+  },
 ];
 
 export function getItemById(id: string): InventoryItemDefinition | undefined {

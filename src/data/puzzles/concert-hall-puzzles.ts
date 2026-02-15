@@ -139,4 +139,36 @@ export const concertHallPuzzles: PuzzleDefinition[] = [
     maxAttempts: { easy: 0, medium: 6, hard: 4 },
     rewardClue: 'The stage door opens to thunderous applause! You escaped the concert hall!',
   },
+  {
+    id: 'concert-note-sequence',
+    roomId: 'concert-hall',
+    type: 'hidden_sequence',
+    name: 'Musical Scale',
+    description: 'Scattered sheet music fragments lie on the stage. Arrange the musical notes in the correct ascending order.',
+    data: {
+      type: 'hidden_sequence',
+      sequence: ['Do', 'Re', 'Mi', 'Fa', 'Sol'],
+      scrambledDisplay: ['Mi', 'Sol', 'Do', 'Fa', 'Re'],
+    },
+    difficultyOverrides: {
+      easy: {
+        type: 'hidden_sequence',
+        sequence: ['Do', 'Re', 'Mi'],
+        scrambledDisplay: ['Mi', 'Do', 'Re'],
+      },
+      hard: {
+        type: 'hidden_sequence',
+        sequence: ['Do', 'Re', 'Mi', 'Fa', 'Sol', 'La', 'Ti'],
+        scrambledDisplay: ['Sol', 'Ti', 'Do', 'La', 'Re', 'Fa', 'Mi'],
+      },
+    },
+    solution: { type: 'sequence', sequence: ['Do', 'Re', 'Mi', 'Fa', 'Sol'] },
+    hints: [
+      { tier: 1, text: 'Think about the musical scale — it starts low and goes high.', autoShowOnEasy: true },
+      { tier: 2, text: 'Do, Re, Mi... what comes next?' },
+      { tier: 3, text: 'Do, Re, Mi, Fa, Sol.' },
+    ],
+    maxAttempts: { easy: 0, medium: 5, hard: 3 },
+    rewardClue: 'The notes harmonize and a hidden compartment opens under the stage!',
+  },
 ];
